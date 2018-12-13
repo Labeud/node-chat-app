@@ -12,7 +12,6 @@ socket.on("newMessage", function (message) {
   console.log("New message in the chat: ", message)
   let li = jQuery("<li></li>")
   li.text(`${message.from}: ${message.text}`)
-
   jQuery("#messages").append(li)
 })
 
@@ -29,11 +28,13 @@ socket.on("newLocationMessage", function (message) {
 jQuery("#message-form").on("submit", (e) => {
   e.preventDefault()
 
+  let messageTextBox = jQuery("[name=message]")
+
   socket.emit("createMessage", {
     from: "User",
-    text: jQuery("[name=message]").val()
+    text: messageTextBox.val()
   }, function () {
-
+    messageTextBox.val("")
   })
 })
 
@@ -44,12 +45,16 @@ locationBtn.on("click", () => {
     return alert("Geolocation not supported by your browser.")
   }
 
+  locationBtn.attr("disabled", "disabled").text("Sending location...")
+
   navigator.geolocation.getCurrentPosition((position) => {
+    locationBtn.removeAttr("disabled").text("Send location")
     socket.emit("createLocationMessage", {
       lat: position.coords.latitude,
       lng: position.coords.longitude
     })
   }, () => {
+    locationBtn.removeAttr("disabled").text("Send location")
     alert("Unable to fetch location.")
   })
 })
