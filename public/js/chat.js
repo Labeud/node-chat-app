@@ -35,16 +35,13 @@ socket.on("disconnect", function () {
 
 socket.on("updateUserList", function (users) {
   const ol = jQuery("<ol></ol>")
-
   users.forEach((user) => {
     ol.append(jQuery("<li></li>").text(user))
   })
-
   jQuery("#users").html(ol)
 })
 
 socket.on("newMessage", function (message) {
-  // console.log("New message in the chat: ", message)
   const formattedTime = moment(message.createdAt).format("h:mm a")
   const template = jQuery("#message-template").html()
   const html = Mustache.render(template, {
@@ -85,11 +82,9 @@ socket.on("newLocationMessage", function (message) {
 
 jQuery("#message-form").on("submit", (e) => {
   e.preventDefault()
-
   let messageTextBox = jQuery("[name=message]")
 
   socket.emit("createMessage", {
-    from: "User",
     text: messageTextBox.val()
   }, function () {
     messageTextBox.val("")
